@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+   
+<meta charset="UTF-8">
+<title>显示图片</title>
+<style>
+    *{padding：0，margin：0}
+</style>
+<h3 align="center">目标跟踪结果</h3>
+<div width="1500" height="720" style="padding:0;">
+      {% for image in images %}
+
+    <img src="/static/images/{{ image }}" width="300" height="120" position="float">
+
+    {% endfor %}
+</div>
+</html>
