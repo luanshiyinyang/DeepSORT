@@ -140,6 +140,7 @@ def test(epoch):
     # 保存训练参数
     acc = 100. * correct / total
     if acc > best_acc:
+        # 始终保留最好的参数，如果过拟合，则不保留参数
         best_acc = acc
         print("Saving parameters to checkpoint/ckpt.t7")
         checkpoint = {

@@ -9,3 +9,4 @@ vizer
 pyyaml
 easydict
 matplotlib
+django>=2.0

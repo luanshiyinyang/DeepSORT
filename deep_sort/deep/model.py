@@ -3,10 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-
-
 class BasicBlock(nn.Module):
-
     def __init__(self, c_in, c_out, is_downsample=False):
         super(BasicBlock, self).__init__()
         self.is_downsample = is_downsample
@@ -99,6 +96,7 @@ class Net(nn.Module):
         x = x.view(x.size(0), -1)
         # B x 128
         if self.reid:
+
             x = x.div(x.norm(p=2, dim=1, keepdim=True))
             return x
         # classifier

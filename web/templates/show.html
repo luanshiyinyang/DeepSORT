@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="zh">
 
+<head>
+    <meta charset="UTF-8">
+    <title>显示图片</title>
+    <link href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
    
-<meta charset="UTF-8">
-<title>显示图片</title>
-<style>
-    *{padding：0，margin：0}
-</style>
-<h3 align="center">目标跟踪结果</h3>
-<div width="1500" height="720" style="padding:0;">
-      {% for image in images %}
-
-    <img src="/static/images/{{ image }}" width="300" height="120" position="float">
-
-    {% endfor %}
+<body>
+<div class="container" style="padding-bottom: 100px">
+    <h3 align="center" class="h3">目标跟踪结果</h3>
+        {% for image in images %}
+        <img src="/static/images/{{ image }}" style="margin-top:3px; padding: 5px" position="float" class="img-thumbnail col-sm-4">
+        {% endfor %}
 </div>
+
+</body>
+
+
 </html>
