@@ -22,12 +22,13 @@ class Extractor(object):
 
     def _preprocess(self, im_crops):
         """
-        TODO:
-            1. to float with scale from 0 to 1
-            2. resize to (64, 128) as Market1501 dataset did
-            3. concatenate to a numpy array
-            3. to torch Tensor
-            4. normalize
+        特征提取器的图像预处理
+        归一到0-1
+        调整图像大小
+        图像标准化
+        Torch张量化
+        :param im_crops: 一个batch的RGB图像（单图需要放在列表中）
+        :return:
         """
         def _resize(im, size):
             return cv2.resize(im.astype(np.float32)/255., size)

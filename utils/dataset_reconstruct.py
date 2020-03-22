@@ -33,6 +33,5 @@ def reconstruct_market1501(source_path, generate_path):
 
 if __name__ == '__main__':
     src_dir = r'data/Market-1501-v15.09.15/'
-    # 将整个market1501数据集作为训练集
     target_dir = r'data/Market-generated/'
     reconstruct_market1501(src_dir, target_dir)

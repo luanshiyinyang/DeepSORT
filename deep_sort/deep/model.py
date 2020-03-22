@@ -35,7 +35,7 @@ class BasicBlock(nn.Module):
         y = self.bn2(y)
         if self.is_downsample:
             x = self.downsample(x)
-        return F.relu(x.add(y), True)
+        return F.relu(x.add(y), True)  # 残差连接
 
 
 def make_layers(c_in, c_out, repeat_times, is_downsample=False):
@@ -61,9 +61,6 @@ class Net(nn.Module):
             nn.Conv2d(3, 64, 3, stride=1, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(inplace=True),
-            # nn.Conv2d(32,32,3,stride=1,padding=1),
-            # nn.BatchNorm2d(32),
-            # nn.ReLU(inplace=True),
             nn.MaxPool2d(3, 2, padding=1),
         )
         # 32 64 32
@@ -94,18 +91,17 @@ class Net(nn.Module):
         x = self.layer4(x)
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
-        # B x 128
+        # B x 256
         if self.reid:
-
-            x = x.div(x.norm(p=2, dim=1, keepdim=True))
+            x = x / x.norm(p=2, dim=1, keepdim=True)  # 张量单位化
             return x
-        # classifier
+        # 分类器
         x = self.classifier(x)
         return x
 
 
 if __name__ == '__main__':
-    net = Net()
+    net = Net(reid=True)
     x = torch.randn(4, 3, 128, 64)
     y = net(x)
     print(y.shape)

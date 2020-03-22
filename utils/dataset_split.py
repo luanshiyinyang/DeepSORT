@@ -20,6 +20,10 @@ def check_folder():
 
 
 def split_dataset():
+    """
+    划分训练集和测试集
+    :return:
+    """
     raw_data_folder = '../dataset/MARS/'
     categories = os.listdir(raw_data_folder)
     label_list = []

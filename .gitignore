@@ -4,7 +4,6 @@ build/
 *.egg-info
 .idea/
 
-
 # Files
 *.weights
 *.t7
