@@ -74,7 +74,7 @@ class VideoTracker(object):
                     ori_im = draw_boxes(ori_im, bbox_xyxy, identities)
 
             end = time.time()
-            print("frame index, spend time: {:.03f}s, fps: {:.03f}".format(idx_frame, end - start, 1 / (end - start)))
+            print("frame index: {}, spend time: {:.03f}s, fps: {:.03f}".format(idx_frame, end - start, 1 / (end - start)))
 
             if self.args.display:
                 cv2.imshow("test", ori_im)
@@ -111,7 +111,7 @@ class VideoTracker(object):
                     ori_im = draw_boxes(ori_im, bbox_xyxy, identities)
 
             end = time.time()
-            print("frame index, spend time: {:.03f}s, fps: {:.03f}".format(idx_frame, end - start, 1 / (end - start)))
+            print("frame index: {}, spend time: {:.03f}s, fps: {:.03f}".format(idx_frame, end - start, 1 / (end - start)))
 
             if self.args.display:
                 cv2.imshow("test", ori_im)

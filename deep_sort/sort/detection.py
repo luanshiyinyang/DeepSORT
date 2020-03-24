@@ -1,47 +1,35 @@
-# vim: expandtab:ts=4:sw=4
 import numpy as np
 
 
 class Detection(object):
     """
-    This class represents a bounding box detection in a single image.
-
-    Parameters
-    ----------
-    tlwh : array_like
-        Bounding box in format `(x, y, w, h)`.
-    confidence : float
-        Detector confidence score.
-    feature : array_like
-        A feature vector that describes the object contained in this image.
-
-    Attributes
-    ----------
-    tlwh : ndarray
-        Bounding box in format `(top left x, top left y, width, height)`.
-    confidence : ndarray
-        Detector confidence score.
-    feature : ndarray | NoneType
-        A feature vector that describes the object contained in this image.
-
+    检测基类
     """
 
     def __init__(self, tlwh, confidence, feature):
+        """
+
+        :param tlwh: bbox (x, y, w, h)
+        :param confidence: 置信度
+        :param feature: 特征向量
+        """
         self.tlwh = np.asarray(tlwh, dtype=np.float)
         self.confidence = float(confidence)
         self.feature = np.asarray(feature, dtype=np.float32)
 
     def to_tlbr(self):
-        """Convert bounding box to format `(min x, min y, max x, max y)`, i.e.,
-        `(top left, bottom right)`.
+        """
+        转换bbox为(top left bottom right)的格式即(minx miny maxx maxy)_
+        :return:
         """
         ret = self.tlwh.copy()
         ret[2:] += ret[:2]
         return ret
 
     def to_xyah(self):
-        """Convert bounding box to format `(center x, center y, aspect ratio,
-        height)`, where the aspect ratio is `width / height`.
+        """
+        转换bbox为(center x, center y, aspect ration, height)
+        :return:
         """
         ret = self.tlwh.copy()
         ret[:2] += ret[2:] / 2

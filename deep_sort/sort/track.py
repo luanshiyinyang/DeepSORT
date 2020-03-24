@@ -38,26 +38,6 @@ class Track:
         Feature vector of the detection this track originates from. If not None,
         this feature is added to the `features` cache.
 
-    Attributes
-    ----------
-    mean : ndarray
-        Mean vector of the initial state distribution.
-    covariance : ndarray
-        Covariance matrix of the initial state distribution.
-    track_id : int
-        A unique track identifier.
-    hits : int
-        Total number of measurement updates.
-    age : int
-        Total number of frames since first occurance.
-    time_since_update : int
-        Total number of frames since last measurement update.
-    state : TrackState
-        The current track state.
-    features : List[ndarray]
-        A cache of features. On each measurement update, the associated feature
-        vector is added to this list.
-
     """
 
     def __init__(self, mean, covariance, track_id, n_init, max_age,
@@ -69,7 +49,7 @@ class Track:
         self.age = 1
         self.time_since_update = 0
 
-        self.state = TrackState.Tentative
+        self.state = TrackState.Tentative  # 创建时的状态为Tentative
         self.features = []
         if feature is not None:
             self.features.append(feature)
@@ -118,7 +98,7 @@ class Track:
         """
         self.mean, self.covariance = kf.predict(self.mean, self.covariance)
         self.age += 1
-        self.time_since_update += 1
+        self.time_since_update += 1  # 每次预测自增1
 
     def update(self, kf, detection):
         """Perform Kalman filter measurement update step and update the feature

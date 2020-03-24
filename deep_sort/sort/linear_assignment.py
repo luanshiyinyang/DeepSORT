@@ -68,6 +68,7 @@ def min_cost_matching(
         track_idx = track_indices[row]
         detection_idx = detection_indices[col]
         if cost_matrix[row, col] > max_distance:
+            # 如果组合后的cost大于阈值还是认为不匹配，移到不匹配列表中
             unmatched_tracks.append(track_idx)
             unmatched_detections.append(detection_idx)
         else:

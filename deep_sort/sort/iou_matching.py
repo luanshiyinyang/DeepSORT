@@ -1,26 +1,13 @@
-from __future__ import absolute_import
 import numpy as np
 from . import linear_assignment
 
 
 def iou(bbox, candidates):
-    """Computer intersection over union.
-
-    Parameters
-    ----------
-    bbox : ndarray
-        A bounding box in format `(top left x, top left y, width, height)`.
-    candidates : ndarray
-        A matrix of candidate bounding boxes (one per row) in the same format
-        as `bbox`.
-
-    Returns
-    -------
-    ndarray
-        The intersection over union in [0, 1] between the `bbox` and each
-        candidate. A higher score means a larger fraction of the `bbox` is
-        occluded by the candidate.
-
+    """
+    计算IOU
+    :param bbox: bbox like (top left x,top left y, width, height)
+    :param candidates:候选跟踪框矩阵（每行一个） 格式同bbox
+    :return:
     """
     bbox_tl, bbox_br = bbox[:2], bbox[:2] + bbox[2:]
     candidates_tl = candidates[:, :2]
@@ -40,28 +27,20 @@ def iou(bbox, candidates):
 
 def iou_cost(tracks, detections, track_indices=None,
              detection_indices=None):
-    """An intersection over union distance metric.
-
-    Parameters
-    ----------
-    tracks : List[deep_sort.track.Track]
-        A list of tracks.
-    detections : List[deep_sort.detection.Detection]
+    """
+    IOU距离
+    :param tracks: List[deep_sort.track.Track]
+    A list of tracks.
+    :param detections : List[deep_sort.detection.Detection]
         A list of detections.
-    track_indices : Optional[List[int]]
+    :param track_indices : Optional[List[int]]
         A list of indices to tracks that should be matched. Defaults to
         all `tracks`.
-    detection_indices : Optional[List[int]]
+    :param detection_indices : Optional[List[int]]
         A list of indices to detections that should be matched. Defaults
         to all `detections`.
-
-    Returns
-    -------
-    ndarray
-        Returns a cost matrix of shape
-        len(track_indices), len(detection_indices) where entry (i, j) is
-        `1 - iou(tracks[track_indices[i]], detections[detection_indices[j]])`.
-
+    :return: 返回代价矩阵(len(track_indices), len(detection_indices))
+    每个元素(i,j)1 - iou(tracks[track_indices[i]], detections[detection_indices[j]])
     """
     if track_indices is None:
         track_indices = np.arange(len(tracks))
