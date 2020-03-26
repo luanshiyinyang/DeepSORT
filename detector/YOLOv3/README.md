@@ -1,11 +1,3 @@
-# YOLOv3 for detection
+# YOLO3检测
 
-This is an implemention of YOLOv3 with only the forward part.
-
-If you want to train YOLOv3 on your custom dataset, please search `YOLOv3` on github.
-
-## Quick forward
-```bash
-cd YOLOv3
-python 
-```
+该部分通过PyTorch实现YOLOv3检测器（参考Github上部分开源项目），包括yolo3和yolo3-tiny。

@@ -21,6 +21,8 @@ class VideoTracker(object):
         is_use_cuda = self.args.use_cuda and torch.cuda.is_available()
         if not is_use_cuda:
             print("Running programme in cpu")
+        else:
+            print("Running programme in gpu")
 
         if self.args.display:
             # 创建可视化窗口
@@ -49,6 +51,7 @@ class VideoTracker(object):
 
     def run(self):
         idx_frame = 0  # 帧序列号
+        fps_list = []
         while self.vdo.grab():
             # 循环取帧图像
             idx_frame += 1
@@ -74,7 +77,9 @@ class VideoTracker(object):
                     ori_im = draw_boxes(ori_im, bbox_xyxy, identities)
 
             end = time.time()
-            print("frame index: {}, spend time: {:.03f}s, fps: {:.03f}".format(idx_frame, end - start, 1 / (end - start)))
+            fps = 1 / (end - start)
+            print("frame index: {}, spend time: {:.03f}s, fps: {:.03f}".format(idx_frame, end - start, fps))
+            fps_list.append(fps)
 
             if self.args.display:
                 cv2.imshow("test", ori_im)
@@ -83,6 +88,8 @@ class VideoTracker(object):
                 # 按照间隔写入视频，并非每一帧都写入
                 if self.args.save_path:
                     self.writer.write(ori_im)
+
+        print(sum(fps_list) / idx_frame)
 
     def run_with_limit(self, frame_limit=200, save_path=None):
         if save_path:
