@@ -153,18 +153,18 @@ def parse_args():
 class Argument(object):
     def __init__(self, video_path):
         """
-        模块调用参数，与上面的命令行参数选择其一
+        模块调用参数，与上面的命令行参数选择其一，防止模块化不能调用命令行参数
         :param video_path:
         """
         self.video_path = video_path
-        self.config_detection = os.path.join(current_path, 'configs/yolov3.yaml')
+        self.config_detector = os.path.join(current_path, 'configs/yolov3.yaml')
         self.config_deepsort = os.path.join(current_path, 'configs/deep_sort.yaml')
-        self.display = False
-        self.frame_interval = 10
+        self.display_window = False  # 默认API调用模式不显示opencv窗口
+        self.frame_interval = 1  # 输出帧间隔默认为1
         self.display_width = 800
         self.display_height = 600
         self.save_path = os.path.join(current_path, 'demo/demo.avi')
-        self.use_cuda = False
+        self.use_cuda = True
 
 
 if __name__ == "__main__":

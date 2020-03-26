@@ -9,7 +9,7 @@ import uuid
 from .settings import MEDIA_ROOT, STATIC_ROOT
 import sys
 sys.path.append("../")
-import yolov3_deepsort
+import yolo3_deepsort
 
 
 def upload(request):
@@ -29,11 +29,11 @@ def upload(request):
                 for c in video.chunks():
                     f.write(c)
             # 视频保存本机之后调用模型
-            args = yolov3_deepsort.Argument(file_path)
-            cfg = yolov3_deepsort.get_config()
+            args = yolo3_deepsort.Argument(file_path)
+            cfg = yolo3_deepsort.get_config()
             cfg.merge_from_file(args.config_detection)
             cfg.merge_from_file(args.config_deepsort)
-            with yolov3_deepsort.VideoTracker(cfg, args, file_path) as vdo_trk:
+            with yolo3_deepsort.VideoTracker(cfg, args, file_path) as vdo_trk:
                 images = vdo_trk.run_with_limit(30, save_path=STATIC_ROOT + '/images/')
             return render(request, 'show.html', {'images': images})
         else:

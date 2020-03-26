@@ -1,7 +1,7 @@
 """
 Author: Zhou Chen
 Date: 2020/3/1
-Desc: desc
+Desc: 数据集重构为按不同行人划分文件夹的格式
 """
 import os
 import shutil
