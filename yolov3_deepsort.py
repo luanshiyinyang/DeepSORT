@@ -18,18 +18,18 @@ class VideoTracker(object):
         self.args = arguments
         if video_path is not None:
             self.args.video_path = video_path
-        is_use_cuda = args.use_cuda and torch.cuda.is_available()
+        is_use_cuda = self.args.use_cuda and torch.cuda.is_available()
         if not is_use_cuda:
             print("Running programme in cpu")
 
-        if args.display:
+        if self.args.display:
             # 创建可视化窗口
             cv2.namedWindow("test", cv2.WINDOW_NORMAL)
             cv2.resizeWindow("test", args.display_width, args.display_height)
 
         self.vdo = cv2.VideoCapture()
-        self.detector = build_detector(cfg, use_cuda=is_use_cuda)
-        self.deepsort = build_tracker(cfg, use_cuda=is_use_cuda)
+        self.detector = build_detector(self.cfg, use_cuda=is_use_cuda)
+        self.deepsort = build_tracker(self.cfg, use_cuda=is_use_cuda)
 
     def __enter__(self):
         self.vdo.open(self.args.video_path)

@@ -18,7 +18,7 @@ SORT 算法的思路是将目标检测算法得到的检测框与预测的跟踪
 设置计数器，在使用卡尔曼滤波进行预测时递增，一旦预测的跟踪结果和目标检测算法检测的结果成功匹配，则将该跟踪器的计数器置零；如果一个跟踪器在一段时间内一直没能匹配上检测的结果，则认为跟踪的目标消失，从跟踪器列表中删除该跟踪器。
 
 **针对新检测结果：**
-当某一帧出现了新的检测结果时（即与当前跟踪结果无法匹配的检测结果），认为可能出现了新的目标，为其创建跟踪器。不过，仍需要观察，如果连续三帧中新跟踪器对目标的预测结果都能和检测结果匹配，那么确认出现了新的目标轨迹，否则删除该跟踪器。
+当某一帧出现了新的检测结果时（即与当前跟踪结果无法匹配的检测结果），认为可能出现了新的目标，为其创建跟踪器。不过，仍需要观察，如果连续三帧中新跟踪器对目标的预测结果都能和某个检测结果匹配，那么确认出现了新的目标轨迹（代码实现中轨迹state置为confirmed），否则删除该跟踪器。
 
 ### 匹配问题
 
@@ -55,7 +55,7 @@ $$b_{i, j}=\prod_{m=1}^{2} b_{i, j}^{(m)}$$
 
 简单理解，假设本来协方差矩阵是一个正态分布，那么连续的预测不更新就会导致这个正态分布的方差越来越大，那么离均值欧氏距离远的点可能和之前分布中离得较近的点获得同样的马氏距离值。
 
-所以，作者使用了级联匹配来对更加频繁出现的目标赋予优先权，具体算法如下图。
+所以，作者使用了级联匹配来对更加频繁出现的目标赋予优先权，具体算法如下图（图源自论文）。
 
 ![](./assets/cascade.png)
 
@@ -73,18 +73,134 @@ T表示当前的跟踪状态集合，D表示当前的检测状态集合。
 第十一行表示返回最终匹配集合M和未匹配集合U。
 
 
-级联匹配的核心思想就是由小到大对消失时间相同的轨迹进行匹配，这样首先保证了对最近出现的目标赋予最大的优先权，也解决了上面所述的问题。在匹配的最后阶段还对 unconfirmed和age=1的未匹配轨迹进行基于IoU的匹配。这可以缓解因为表观突变或者部分遮挡导致的较大变化。当然有好处就有坏处，这样做也有可能导致一些新产生的轨迹被连接到了一些旧的轨迹上，但这种情况较少。
+级联匹配的核心思想就是由小到大对消失时间相同的轨迹进行匹配，这样首先保证了对最近出现的目标赋予最大的优先权，也解决了上面所述的问题。在匹配的最后阶段还对 unconfirmed和age=1的未匹配轨迹进行基于IoU的匹配。这可以缓解因为表观突变或者部分遮挡导致的较大变化。
 
 ### 深度特征提取
 
 网络结果如下图。
 ![](./assets/net.png)
 
-要求输入的图像为128\*64，输出128维的特征向量。
+要求输入的图像为128\*64，输出128维的特征向量。**我在使用Pytorch实现时将上述结构中的池化换成了stride为2的卷积，输出隐层换位256维特征向量，以增大一定参数量的代价试图获得更好的结果。此外，参考最近较火的EfficientNet进行优化，但算力要求过大，还在研究中。**
 
-由于主要用于行人识别，所以在行人重识别数据集（MARS 和 MARKET）上离线训练模型，学到的参数很适合提取行人特征，最后输出128维的归一化后的特征。
+由于主要用于行人识别，所以在行人重识别数据集（MARS）上离线训练模型，学到的参数很适合提取行人特征，最后输出256维的归一化后的特征。
+
+核心模型结构代码如下。
+```python
+class BasicBlock(nn.Module):
+    def __init__(self, c_in, c_out, is_downsample=False):
+        super(BasicBlock, self).__init__()
+        self.is_downsample = is_downsample
+        if is_downsample:
+            self.conv1 = nn.Conv2d(c_in, c_out, 3, stride=2, padding=1, bias=False)
+        else:
+            self.conv1 = nn.Conv2d(c_in, c_out, 3, stride=1, padding=1, bias=False)
+        self.bn1 = nn.BatchNorm2d(c_out)
+        self.relu = nn.ReLU(True)
+        self.conv2 = nn.Conv2d(c_out, c_out, 3, stride=1, padding=1, bias=False)
+        self.bn2 = nn.BatchNorm2d(c_out)
+        if is_downsample:
+            self.downsample = nn.Sequential(
+                nn.Conv2d(c_in, c_out, 1, stride=2, bias=False),
+                nn.BatchNorm2d(c_out)
+            )
+        elif c_in != c_out:
+            self.downsample = nn.Sequential(
+                nn.Conv2d(c_in, c_out, 1, stride=1, bias=False),
+                nn.BatchNorm2d(c_out)
+            )
+            self.is_downsample = True
+
+    def forward(self, x):
+        y = self.conv1(x)
+        y = self.bn1(y)
+        y = self.relu(y)
+        y = self.conv2(y)
+        y = self.bn2(y)
+        if self.is_downsample:
+            x = self.downsample(x)
+        return F.relu(x.add(y), True)  # 残差连接
+
+
+def make_layers(c_in, c_out, repeat_times, is_downsample=False):
+    blocks = []
+    for i in range(repeat_times):
+        if i == 0:
+            blocks += [BasicBlock(c_in, c_out, is_downsample=is_downsample), ]
+        else:
+            blocks += [BasicBlock(c_out, c_out), ]
+    return nn.Sequential(*blocks)
+
+
+class Net(nn.Module):
+    def __init__(self, num_classes=1261, reid=False):
+        """
+
+        :param num_classes: 分类器层输出的类别数目
+        :param reid: 是否为reid模式，若为True，直接返回特征向量而不做分类
+        """
+        super(Net, self).__init__()
+        # 3 128 64
+        self.conv = nn.Sequential(
+            nn.Conv2d(3, 64, 3, stride=1, padding=1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(3, 2, padding=1),
+        )
+        # 32 64 32
+        self.layer1 = make_layers(64, 64, 2, False)
+        # 32 64 32
+        self.layer2 = make_layers(64, 128, 2, True)
+        # 64 32 16
+        self.layer3 = make_layers(128, 256, 2, True)
+        # 128 16 8
+        self.layer4 = make_layers(256, 512, 2, True)
+        # 256 8 4
+        self.avgpool = nn.AvgPool2d((8, 4), 1)
+        # 256 1 1 
+        self.reid = reid
+        self.classifier = nn.Sequential(
+            nn.Linear(512, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(inplace=True),
+            nn.Dropout(),
+            nn.Linear(256, num_classes),
+        )
+
+    def forward(self, x):
+        x = self.conv(x)
+        x = self.layer1(x)
+        x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.layer4(x)
+        x = self.avgpool(x)
+        x = x.view(x.size(0), -1)
+        # B x 256
+        if self.reid:
+            x = x / x.norm(p=2, dim=1, keepdim=True)  # 张量单位化
+            return x
+        # 分类器
+        x = self.classifier(x)
+        return x
+```
+
+使用GPU训练50轮的结果如下。
+
+![](./assets/train.png)
 
 ## 流程描述
-如下图。
+如下图，使用Visio绘制。
 ![](./assets/算法流程.png)
 
+## 项目说明
+本项目主要分为三大模块，deepsort算法模块（其中又分deep模块和sort模块），yolo3检测模块，以及web模块。最终封装为一个跟踪器模块，用于外部接口调用，该模块接受一个视频或者图片序列。
+
+**其中，deepsort算法模块包含深度外观特征提取器的deep模块（使用Pytorch实现及训练）以及原始sort跟踪算法模块（该模块部分内容参考SORT论文源码）；yolo3检测模块调用封装好的Pytorch实现的YOLO3算法，做了本部分API的兼容；web模块则以Django为框架实现了模型的后端部署，用户通过网页提交视频，后端解析生成跟踪结果（由于机器限制，目前只返回部分帧的检测结果，实时生成依赖GPU服务器，个人电脑FPS较低。）**
+
+具体演示如下（浏览器访问）。
+
+![](./assets/web.png)
+![](./assets/web_rst.png)
+
+
+## 补充说明
+具体代码开源于[我的Github](https://github.com/luanshiyinyang/DeepSORT)，欢迎访问。
