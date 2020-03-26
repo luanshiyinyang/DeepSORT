@@ -119,9 +119,9 @@ class VideoTracker(object):
             if idx_frame % self.args.frame_interval == 0:
                 if self.args.save_path:
                     self.writer.write(ori_im)
-            file_path = os.path.join(save_path, '{}.png'.format(idx_frame))
-            result_path.append(os.path.split(file_path)[-1])  # 只返回文件名，不包含完整路径，这是为了配合Django的静态文件设置
-            cv2.imwrite(file_path, ori_im)
+                file_path = os.path.join(save_path, '{}.png'.format(idx_frame))
+                result_path.append(os.path.split(file_path)[-1])  # 只返回文件名，不包含完整路径，这是为了配合Django的静态文件设置
+                cv2.imwrite(file_path, ori_im)
         return result_path
 
 

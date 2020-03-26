@@ -1,12 +1,9 @@
+"""
+本模块参考SORT论文源码
+"""
 import numpy as np
 import scipy.linalg
 
-
-"""
-Table for the 0.95 quantile of the chi-square distribution with N degrees of
-freedom (contains values for N=1, ..., 9). Taken from MATLAB/Octave's chi2inv
-function and used as Mahalanobis gating threshold.
-"""
 chi2inv95 = {
     1: 3.8415,
     2: 5.9915,
@@ -21,19 +18,9 @@ chi2inv95 = {
 
 class KalmanFilter(object):
     """
-    A simple Kalman filter for tracking bounding boxes in image space.
-
-    The 8-dimensional state space
-
-        x, y, a, h, vx, vy, va, vh
-
-    contains the bounding box center position (x, y), aspect ratio a, height h,
-    and their respective velocities.
-
-    Object motion follows a constant velocity model. The bounding box location
-    (x, y, a, h) is taken as direct observation of the state space (linear
-    observation model).
-
+    图像空间预测bbox的卡尔曼滤波
+    8维空间
+    目标移动按照匀速模型，bbox位置作为状态空间的直接观测（线性观测模型）。
     """
 
     def __init__(self):

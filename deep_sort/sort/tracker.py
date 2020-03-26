@@ -7,19 +7,7 @@ from .track import Track
 
 class Tracker:
     """
-    This is the multi-target tracker.
-
-    Parameters
-    ----------
-    metric : nn_matching.NearestNeighborDistanceMetric
-        A distance metric for measurement-to-track association.
-    max_age : int
-        Maximum number of missed misses before a track is deleted.
-    n_init : int
-        Number of consecutive detections before the track is confirmed. The
-        track state is set to `Deleted` if a miss occurs within the first
-        `n_init` frames.
-
+    多目标跟踪器实现
     """
 
     def __init__(self, metric, max_iou_distance=0.7, max_age=70, n_init=3):
@@ -33,21 +21,15 @@ class Tracker:
         self._next_id = 1
 
     def predict(self):
-        """Propagate track state distributions one time step forward.
-
-        This function should be called once every time step, before `update`.
+        """
+        状态预测
         """
         for track in self.tracks:
             track.predict(self.kf)
 
     def update(self, detections):
-        """Perform measurement update and track management.
-
-        Parameters
-        ----------
-        detections : List[deep_sort.detection.Detection]
-            A list of detections at the current time step.
-
+        """
+        状态更新
         """
         # 级联匹配
         matches, unmatched_tracks, unmatched_detections = self._match(detections)
