@@ -5,7 +5,7 @@ import argparse
 import torch
 
 from detector import build_detector
-from deep_sort import build_tracker
+from deepsort import build_tracker
 from utils.draw import draw_boxes
 from utils.parser import parse_config
 
@@ -144,7 +144,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("--video_path", type=str, default='TownCentreXVID.avi')  # 进行跟踪的源视频
     parser.add_argument("--config_detection", type=str, default="./configs/yolov3.yml")  # yolo3检测配置文件
-    parser.add_argument("--config_deepsort", type=str, default="./configs/deep_sort.yml")  # deepsort跟踪配置文件
+    parser.add_argument("--config_deepsort", type=str, default="./configs/deepsort.yml")  # deepsort跟踪配置文件
     parser.add_argument("--frame_interval", type=int, default=1)  # 输出视频帧间隔
     parser.add_argument("--display_window", dest="display", default=False)  # 是否视频控制台显示
     parser.add_argument("--display_width", type=int, default=800)  # 输出视频宽度
@@ -162,7 +162,7 @@ class Argument(object):
         """
         self.video_path = video_path  # 输入视频路径
         self.config_detector = os.path.join(current_path, 'configs/yolov3.yml')  # 检测器配置文件
-        self.config_deepsort = os.path.join(current_path, 'configs/deep_sort.yml')  # deepsort算法配置文件
+        self.config_deepsort = os.path.join(current_path, 'configs/deepsort.yml')  # deepsort算法配置文件
         self.display_window = False  # 默认API调用模式不显示opencv窗口
         self.frame_interval = 1  # 输出帧间隔默认为1，此种情况下若输出视频与输入视频FPS为相等，则输出视频与输入视频等时长
         self.display_width = 800  # 输出视频宽度
