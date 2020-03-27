@@ -1,5 +1,5 @@
 import sys
-sys.path.append("detector/YOLOv3")
+sys.path.append("detector/YOLO3")
 
 
 from .detector import YOLOv3

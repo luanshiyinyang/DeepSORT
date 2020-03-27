@@ -1,4 +1,4 @@
-from .YOLOv3 import YOLOv3
+from .YOLO3 import YOLOv3
 
 
 __all__ = ['build_detector']
