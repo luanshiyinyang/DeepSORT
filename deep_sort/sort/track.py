@@ -10,29 +10,8 @@ class TrackState:
 
 class Track:
     """
-    A single target track with state space `(x, y, a, h)` and associated
-    velocities, where `(x, y)` is the center of the bounding box, `a` is the
-    aspect ratio and `h` is the height.
-
-    Parameters
-    ----------
-    mean : ndarray
-        Mean vector of the initial state distribution.
-    covariance : ndarray
-        Covariance matrix of the initial state distribution.
-    track_id : int
-        A unique track identifier.
-    n_init : int
-        Number of consecutive detections before the track is confirmed. The
-        track state is set to `Deleted` if a miss occurs within the first
-        `n_init` frames.
-    max_age : int
-        The maximum number of consecutive misses before the track state is
-        set to `Deleted`.
-    feature : Optional[ndarray]
-        Feature vector of the detection this track originates from. If not None,
-        this feature is added to the `features` cache.
-
+    单目标轨迹
+    包含一个轨迹的所有信息
     """
 
     def __init__(self, mean, covariance, track_id, n_init, max_age,
@@ -53,13 +32,10 @@ class Track:
         self._max_age = max_age
 
     def to_tlwh(self):
-        """Get current position in bounding box format `(top left x, top left y,
-        width, height)`.
-
+        """
+        当前目标位置，格式转换
         Returns
         -------
-        ndarray
-            The bounding box.
 
         """
         ret = self.mean[:4].copy()
@@ -68,27 +44,19 @@ class Track:
         return ret
 
     def to_tlbr(self):
-        """Get current position in bounding box format `(min x, miny, max x,
-        max y)`.
-
-        Returns
-        -------
-        ndarray
-            The bounding box.
-
-        """
         ret = self.to_tlwh()
         ret[2:] = ret[:2] + ret[2:]
         return ret
 
     def predict(self, kf):
-        """Propagate the state distribution to the current time step using a
-        Kalman filter prediction step.
-
+        """
+        使用卡尔曼滤波进行状态预测
         Parameters
         ----------
-        kf : kalman_filter.KalmanFilter
-            The Kalman filter.
+        kf
+
+        Returns
+        -------
 
         """
         self.mean, self.covariance = kf.predict(self.mean, self.covariance)
@@ -96,15 +64,15 @@ class Track:
         self.time_since_update += 1  # 每次预测自增1
 
     def update(self, kf, detection):
-        """Perform Kalman filter measurement update step and update the feature
-        cache.
-
+        """
+        进行相关矩阵和数据的更新
         Parameters
         ----------
-        kf : kalman_filter.KalmanFilter
-            The Kalman filter.
-        detection : Detection
-            The associated detection.
+        kf
+        detection
+
+        Returns
+        -------
 
         """
         self.mean, self.covariance = kf.update(
@@ -117,22 +85,22 @@ class Track:
             self.state = TrackState.Confirmed
 
     def mark_missed(self):
-        """Mark this track as missed (no association at the current time step).
-        """
         if self.state == TrackState.Tentative:
             self.state = TrackState.Deleted
         elif self.time_since_update > self._max_age:
             self.state = TrackState.Deleted
 
     def is_tentative(self):
-        """Returns True if this track is tentative (unconfirmed).
+        """
+        该轨迹是否为tentative
+        Returns
+        -------
+
         """
         return self.state == TrackState.Tentative
 
     def is_confirmed(self):
-        """Returns True if this track is confirmed."""
         return self.state == TrackState.Confirmed
 
     def is_deleted(self):
-        """Returns True if this track is dead and should be deleted."""
         return self.state == TrackState.Deleted

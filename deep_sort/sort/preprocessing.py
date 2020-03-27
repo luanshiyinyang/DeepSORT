@@ -3,7 +3,7 @@ import numpy as np
 
 def non_max_suppression(boxes, max_bbox_overlap, scores=None):
     """
-
+    nms算法的Python实现
     :param boxes: ROI矩阵，格式为(x, y, w, h)
     :param max_bbox_overlap:覆盖高于该值被抑制
     :param scores:检测器置信度
