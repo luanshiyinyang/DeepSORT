@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 import numpy as np
 from scipy.optimize import linear_sum_assignment as linear_assignment
 from . import kalman_filter
@@ -7,40 +6,23 @@ from . import kalman_filter
 INFTY_COST = 1e+5
 
 
-def min_cost_matching(
-        distance_metric, max_distance, tracks, detections, track_indices=None,
-        detection_indices=None):
-    """Solve linear assignment problem.
-
+def min_cost_matching(distance_metric, max_distance, tracks, detections, track_indices=None, detection_indices=None):
+    """
+    使用匈牙利算法解决线性分配问题
     Parameters
     ----------
-    distance_metric : Callable[List[Track], List[Detection], List[int], List[int]) -> ndarray
-        The distance metric is given a list of tracks and detections as well as
-        a list of N track indices and M detection indices. The metric should
-        return the NxM dimensional cost matrix, where element (i, j) is the
-        association cost between the i-th track in the given track indices and
-        the j-th detection in the given detection_indices.
-    max_distance : float
-        Gating threshold. Associations with cost larger than this value are
-        disregarded.
-    tracks : List[track.Track]
-        A list of predicted tracks at the current time step.
-    detections : List[detection.Detection]
-        A list of detections at the current time step.
-    track_indices : List[int]
-        List of track indices that maps rows in `cost_matrix` to tracks in
-        `tracks` (see description above).
-    detection_indices : List[int]
-        List of detection indices that maps columns in `cost_matrix` to
-        detections in `detections` (see description above).
+    distance_metric  轨迹集检测和他们的下标
+    max_distance 最大距离阈值，大于此距离的关联无效
+    tracks
+    detections
+    track_indices
+    detection_indices
 
     Returns
+    匹配上的轨迹和检测
+    未匹配的轨迹
+    未匹配的检测
     -------
-    (List[(int, int)], List[int], List[int])
-        Returns a tuple with the following three entries:
-        * A list of matched track and detection indices.
-        * A list of unmatched track indices.
-        * A list of unmatched detection indices.
 
     """
     if track_indices is None:

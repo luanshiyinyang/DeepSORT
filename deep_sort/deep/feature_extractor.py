@@ -12,7 +12,7 @@ class Extractor(object):
         self.device = "cuda" if torch.cuda.is_available() and use_cuda else "cpu"
         state_dict = torch.load(model_path, map_location=lambda storage, loc: storage)['net_dict']
         self.net.load_state_dict(state_dict)
-        print("Loading weights from {}!".format(model_path))
+        print("Loaded weights from {}.".format(model_path))
         self.net.to(self.device)
         self.size = (64, 128)
         self.norm = transforms.Compose([
@@ -46,8 +46,8 @@ class Extractor(object):
 
 if __name__ == '__main__':
     # 测试提取器
-    imgs = [cv2.cvtColor(cv2.imread("../../demo/1.jpg"), cv2.COLOR_BGR2RGB),
-            cv2.cvtColor(cv2.imread("../../demo/2.jpg"), cv2.COLOR_BGR2RGB)
+    imgs = [cv2.cvtColor(cv2.imread("../../result/1.jpg"), cv2.COLOR_BGR2RGB),
+            cv2.cvtColor(cv2.imread("../../result/2.jpg"), cv2.COLOR_BGR2RGB)
             ]
     extractor = Extractor("checkpoint/ckpt.t7")
     feature = extractor(imgs)

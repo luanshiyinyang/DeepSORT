@@ -16,18 +16,18 @@ class YamlParser(edict):
         super(YamlParser, self).__init__(cfg_dict)
 
     def merge_from_file(self, config_file):
-        with open(config_file, 'r') as fo:
+        with open(config_file, 'r', encoding="utf8") as fo:
             self.update(yaml.load(fo.read(), Loader=yaml.FullLoader))
 
     def merge_from_dict(self, config_dict):
         self.update(config_dict)
 
 
-def get_config(config_file=None):
+def parse_config(config_file=None):
     return YamlParser(config_file=config_file)
 
 
 if __name__ == "__main__":
-    cfg = YamlParser(config_file="../configs/yolov3.yaml")
-    cfg.merge_from_file("../configs/deep_sort.yaml")
+    cfg = YamlParser(config_file="../configs/yolov3.yml")
+    cfg.merge_from_file("../configs/deep_sort.yml")
     print(cfg)

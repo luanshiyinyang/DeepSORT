@@ -10,3 +10,5 @@ build/
 *.mp4
 *.avi
 *.so
+*.zip
+demo.gif

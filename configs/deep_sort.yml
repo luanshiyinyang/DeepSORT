@@ -1,10 +1,13 @@
 DEEPSORT:
+  # 预训练reid模型参数文件
   REID_CKPT: "./deep_sort/deep/checkpoint/ckpt.t7"
   MAX_DIST: 0.2
   MIN_CONFIDENCE: 0.3
   NMS_MAX_OVERLAP: 0.5
   MAX_IOU_DISTANCE: 0.7
   MAX_AGE: 70
+  # 确认帧所需帧数
   N_INIT: 3
+  # 临时特征向量容量
   NN_BUDGET: 100
   

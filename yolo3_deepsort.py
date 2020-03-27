@@ -7,7 +7,7 @@ import torch
 from detector import build_detector
 from deep_sort import build_tracker
 from utils.draw import draw_boxes
-from utils.parser import get_config
+from utils.parser import parse_config
 
 current_path = os.path.dirname(__file__)
 
@@ -16,6 +16,7 @@ class VideoTracker(object):
     def __init__(self, config, arguments, video_path=None):
         self.cfg = config
         self.args = arguments
+        self.video_fps = 60  # 默认输出视频FPS为60
         if video_path is not None:
             self.args.video_path = video_path
         is_use_cuda = self.args.use_cuda and torch.cuda.is_available()
@@ -35,10 +36,13 @@ class VideoTracker(object):
 
     def __enter__(self):
         self.vdo.open(self.args.video_path)
+        self.video_fps = self.vdo.get(cv2.CAP_PROP_FPS)
+        print("input video fps", self.video_fps)
         self.im_width = int(self.vdo.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.im_height = int(self.vdo.get(cv2.CAP_PROP_FRAME_HEIGHT))
         if self.args.save_path:
-            self.writer = cv2.VideoWriter(self.args.save_path, cv2.VideoWriter_fourcc(*'XVID'), 60, (self.im_width, self.im_height))
+            # 视频写入时尽量保证和原视频FPS一致
+            self.writer = cv2.VideoWriter(self.args.save_path, cv2.VideoWriter_fourcc(*'XVID'), self.video_fps, (self.im_width, self.im_height))
         assert self.vdo.isOpened()
         return self
 
@@ -132,20 +136,20 @@ class VideoTracker(object):
         return result_path
 
 
-def parse_args():
+def parse_arguments():
     """
-    命令行运行脚本参数
+    解析命令行脚本参数
     :return:
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("--video_path", type=str, default='TownCentreXVID.avi')  # 进行跟踪的源视频
-    parser.add_argument("--config_detection", type=str, default="./configs/yolov3.yaml")  # yolo3检测配置文件
-    parser.add_argument("--config_deepsort", type=str, default="./configs/deep_sort.yaml")  # deepsort跟踪配置文件
-    parser.add_argument("--display_window", dest="display", default=False)  # 是否视频控制台显示
+    parser.add_argument("--config_detection", type=str, default="./configs/yolov3.yml")  # yolo3检测配置文件
+    parser.add_argument("--config_deepsort", type=str, default="./configs/deep_sort.yml")  # deepsort跟踪配置文件
     parser.add_argument("--frame_interval", type=int, default=1)  # 输出视频帧间隔
+    parser.add_argument("--display_window", dest="display", default=False)  # 是否视频控制台显示
     parser.add_argument("--display_width", type=int, default=800)  # 输出视频宽度
     parser.add_argument("--display_height", type=int, default=600)  # 输出视频高度
-    parser.add_argument("--save_path", type=str, default="./demo/demo.avi")  # 输出视频保存路径
+    parser.add_argument("--save_path", type=str, default="./result/result.avi")  # 输出视频保存路径
     parser.add_argument("--gpu", dest="use_cuda", action="store_false", default=False)  # 是否使用GPU
     return parser.parse_args()
 
@@ -156,22 +160,22 @@ class Argument(object):
         模块调用参数，与上面的命令行参数选择其一，防止模块化不能调用命令行参数
         :param video_path:
         """
-        self.video_path = video_path
-        self.config_detector = os.path.join(current_path, 'configs/yolov3.yaml')
-        self.config_deepsort = os.path.join(current_path, 'configs/deep_sort.yaml')
+        self.video_path = video_path  # 输入视频路径
+        self.config_detector = os.path.join(current_path, 'configs/yolov3.yml')  # 检测器配置文件
+        self.config_deepsort = os.path.join(current_path, 'configs/deep_sort.yml')  # deepsort算法配置文件
         self.display_window = False  # 默认API调用模式不显示opencv窗口
-        self.frame_interval = 1  # 输出帧间隔默认为1
-        self.display_width = 800
-        self.display_height = 600
-        self.save_path = os.path.join(current_path, 'demo/demo.avi')
-        self.use_cuda = True
+        self.frame_interval = 1  # 输出帧间隔默认为1，此种情况下若输出视频与输入视频FPS为相等，则输出视频与输入视频等时长
+        self.display_width = 800  # 输出视频宽度
+        self.display_height = 600  # 输出视频高度
+        self.save_path = os.path.join(current_path, 'result/result.avi')  # 输出视频文件路径
+        self.use_cuda = True  # 是否使用GPU
 
 
 if __name__ == "__main__":
-    args = parse_args()
-    cfg = get_config()
-    cfg.merge_from_file(args.config_detection)
-    cfg.merge_from_file(args.config_deepsort)
+    args = parse_arguments()
+    cfg = parse_config()
+    cfg.merge_from_file(args.config_detection)  # 获取检测配置文件
+    cfg.merge_from_file(args.config_deepsort)  # 获取deepsort算法配置文件
 
     with VideoTracker(cfg, args) as vdo_trk:
         vdo_trk.run()

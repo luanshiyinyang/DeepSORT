@@ -29,18 +29,12 @@ def iou_cost(tracks, detections, track_indices=None,
              detection_indices=None):
     """
     IOU距离
-    :param tracks: List[deep_sort.track.Track]
-    A list of tracks.
-    :param detections : List[deep_sort.detection.Detection]
-        A list of detections.
-    :param track_indices : Optional[List[int]]
-        A list of indices to tracks that should be matched. Defaults to
-        all `tracks`.
-    :param detection_indices : Optional[List[int]]
-        A list of indices to detections that should be matched. Defaults
-        to all `detections`.
-    :return: 返回代价矩阵(len(track_indices), len(detection_indices))
-    每个元素(i,j)1 - iou(tracks[track_indices[i]], detections[detection_indices[j]])
+    :param tracks: 一个列表的轨迹
+    :param detections : 一个列表的检测
+    :param track_indices : 一个该被匹配的轨迹下标列表
+    :param detection_indices : 一个该被匹配的检测下标列表
+    :return: 返回代价矩阵，维度(len(track_indices), len(detection_indices))
+        每个元素(i,j)1 - iou(tracks[track_indices[i]], detections[detection_indices[j]])
     """
     if track_indices is None:
         track_indices = np.arange(len(tracks))

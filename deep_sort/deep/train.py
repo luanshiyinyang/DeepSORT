@@ -59,7 +59,7 @@ net = Net(num_classes=num_classes)
 if args.resume:
     # 是否使用预训练参数
     assert os.path.isfile("./checkpoint/ckpt.t7"), "Error: no checkpoint file found!"
-    print('Loading from checkpoint/ckpt.t7')
+    print('Loaded pretrained weights from checkpoint file')
     checkpoint = torch.load("./checkpoint/ckpt.t7")  # 该字典含有net_dict，acc，epoch三个键
     net_dict = checkpoint['net_dict']
     net.load_state_dict(net_dict)

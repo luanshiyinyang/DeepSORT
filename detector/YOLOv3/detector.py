@@ -4,7 +4,6 @@ import cv2
 
 from .darknet import Darknet
 from .yolo_utils import get_all_boxes, nms, post_process, xywh_to_xyxy, xyxy_to_xywh
-from .nms import boxes_nms
 
 
 class YOLOv3(object):
@@ -12,7 +11,7 @@ class YOLOv3(object):
         # net definition
         self.net = Darknet(cfgfile)
         self.net.load_weights(weightfile)
-        print('Loading weights from %s... Done!' % (weightfile))
+        print('Loaded weights from %s.' % (weightfile))
         self.device = "cuda" if use_cuda else "cpu"
         self.net.eval()
         self.net.to(self.device)
@@ -41,8 +40,9 @@ class YOLOv3(object):
             out_boxes = self.net(img)
             boxes = get_all_boxes(out_boxes, self.conf_thresh, self.num_classes, use_cuda=self.use_cuda) #batch size is 1
             # boxes = nms(boxes, self.nms_thresh)
+            # nms嵌入到下面的处理函数中
             boxes = post_process(boxes, self.net.num_classes, self.conf_thresh, self.nms_thresh)[0].cpu()
-            boxes = boxes[boxes[:,-2]>self.score_thresh, :] # bbox xmin ymin xmax ymax
+            boxes = boxes[boxes[:, -2]> self.score_thresh, :] # bbox xmin ymin xmax ymax
 
         if len(boxes) == 0:
             return None, None, None
@@ -70,7 +70,7 @@ def demo():
 
     yolo = YOLOv3("cfg/yolo_v3.cfg","weight/yolov3.weights","cfg/coco.names")
     print("yolo.size =",yolo.size)
-    root = "./demo"
+    root = "./result"
     resdir = os.path.join(root, "results")
     os.makedirs(resdir, exist_ok=True)
     files = [os.path.join(root,file) for file in os.listdir(root) if file.endswith('.jpg')]

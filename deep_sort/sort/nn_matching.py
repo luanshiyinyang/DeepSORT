@@ -97,6 +97,7 @@ def _nn_cosine_distance(x, y):
 
 class NearestNeighborDistanceMetric(object):
     """
+    最近邻距离度量
     A nearest neighbor distance metric that, for each target, returns
     the closest distance to any sample that has been observed so far.
 

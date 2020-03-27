@@ -3,7 +3,7 @@ import numpy as np
 
 class Detection(object):
     """
-    检测基类
+    检测基类，不论使用什么检测框架，最后由该类处理
     """
 
     def __init__(self, tlwh, confidence, feature):
