@@ -3,6 +3,9 @@ __pycache__/
 build/
 *.egg-info
 .idea/
+外部数据/
+外部数据测试结果/
+FasterRCNN/
 
 # Files
 *.weights

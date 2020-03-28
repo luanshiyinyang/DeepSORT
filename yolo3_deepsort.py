@@ -6,8 +6,8 @@ import torch
 
 from detector import build_detector
 from deepsort import build_tracker
-from utils.draw import draw_boxes
-from utils.parser import parse_config
+from utils.draw_bbox import draw_boxes
+from utils.parse_config import parse_config
 
 current_path = os.path.dirname(__file__)
 
@@ -40,9 +40,9 @@ class VideoTracker(object):
         print("input video fps", self.video_fps)
         self.im_width = int(self.vdo.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.im_height = int(self.vdo.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        if self.args.save_path:
+        if self.args.output_path:
             # 视频写入时尽量保证和原视频FPS一致
-            self.writer = cv2.VideoWriter(self.args.save_path, cv2.VideoWriter_fourcc(*'XVID'), self.video_fps, (self.im_width, self.im_height))
+            self.writer = cv2.VideoWriter(self.args.output_path, cv2.VideoWriter_fourcc(*'XVID'), self.video_fps, (self.im_width, self.im_height))
         assert self.vdo.isOpened()
         return self
 
@@ -66,7 +66,7 @@ class VideoTracker(object):
             # 目标检测
             bbox_xywh, cls_confidence, cls_ids = self.detector(im)
             if bbox_xywh is not None:
-                # 取出所有类别id为0的检测框
+                # 取出所有类别id为0的检测框，该类别id对应行人，具体可以查看yolo配置文件中的coco.names文件查看
                 mask = (cls_ids == 0)
                 bbox_xywh = bbox_xywh[mask]
                 cls_confidence = cls_confidence[mask]
@@ -90,14 +90,14 @@ class VideoTracker(object):
                 cv2.waitKey(1)
             if idx_frame % self.args.frame_interval == 0:
                 # 按照间隔写入视频，并非每一帧都写入
-                if self.args.save_path:
+                if self.args.output_path:
                     self.writer.write(ori_im)
 
         print(sum(fps_list) / idx_frame)
 
     def run_with_limit(self, frame_limit=200, save_path=None):
         if save_path:
-            self.args.save_path = save_path
+            self.args.output_path = save_path
         idx_frame = 0
         result_path = []  # 存放预览的跟踪结果图片
         while self.vdo.grab() and idx_frame < frame_limit * self.args.frame_interval:
@@ -128,11 +128,11 @@ class VideoTracker(object):
                 cv2.imshow("test", ori_im)
                 cv2.waitKey(1)
             if idx_frame % self.args.frame_interval == 0:
-                if self.args.save_path:
+                if self.args.output_path:
                     self.writer.write(ori_im)
-                file_path = os.path.join(save_path, '{}.png'.format(idx_frame))
-                result_path.append(os.path.split(file_path)[-1])  # 只返回文件名，不包含完整路径，这是为了配合Django的静态文件设置
-                cv2.imwrite(file_path, ori_im)
+                    file_path = os.path.join(save_path, '{}.png'.format(idx_frame))
+                    result_path.append(os.path.split(file_path)[-1])  # 只返回文件名，不包含完整路径，这是为了配合Django的静态文件设置
+                    cv2.imwrite(file_path, ori_im)
         return result_path
 
 
@@ -146,11 +146,11 @@ def parse_arguments():
     parser.add_argument("--config_detection", type=str, default="./configs/yolov3.yml")  # yolo3检测配置文件
     parser.add_argument("--config_deepsort", type=str, default="./configs/deepsort.yml")  # deepsort跟踪配置文件
     parser.add_argument("--frame_interval", type=int, default=1)  # 输出视频帧间隔
-    parser.add_argument("--display_window", dest="display", default=False)  # 是否视频控制台显示
-    parser.add_argument("--display_width", type=int, default=800)  # 输出视频宽度
-    parser.add_argument("--display_height", type=int, default=600)  # 输出视频高度
-    parser.add_argument("--save_path", type=str, default="./result/result.avi")  # 输出视频保存路径
-    parser.add_argument("--gpu", dest="use_cuda", action="store_false", default=False)  # 是否使用GPU
+    parser.add_argument("--show_window", dest="display", default=False)  # 是否视频控制台显示
+    parser.add_argument("--show_width", type=int, default=800)  # 输出视频宽度
+    parser.add_argument("--show_height", type=int, default=600)  # 输出视频高度
+    parser.add_argument("--output_path", type=str, default="./result/result.avi")  # 输出视频保存路径
+    parser.add_argument("--use_cuda", action="store_true", default=True)  # 是否使用GPU
     return parser.parse_args()
 
 
@@ -167,7 +167,7 @@ class Argument(object):
         self.frame_interval = 1  # 输出帧间隔默认为1，此种情况下若输出视频与输入视频FPS为相等，则输出视频与输入视频等时长
         self.display_width = 800  # 输出视频宽度
         self.display_height = 600  # 输出视频高度
-        self.save_path = os.path.join(current_path, 'result/result.avi')  # 输出视频文件路径
+        self.output_path = os.path.join(current_path, 'result/result.avi')  # 输出视频文件路径
         self.use_cuda = True  # 是否使用GPU
 
 
