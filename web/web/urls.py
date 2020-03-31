@@ -4,11 +4,12 @@ from django.urls import path
 from . import views
 from . import settings
 from django.conf.urls.static import static
+from django.conf.urls import url
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.upload),
-    path('video/', views.stream_video)
+    url('video/', views.stream_video, name="video")
 ]
 
 urlpatterns += staticfiles_urlpatterns()

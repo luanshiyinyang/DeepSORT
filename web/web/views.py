@@ -61,8 +61,10 @@ def file_iterator(file_name, chunk_size=8192, offset=0, length=None):
             yield data
 
 
-def stream_video(request, path):
+def stream_video(request):
     """将视频文件以流媒体的方式响应"""
+    path = request.GET.get('path')
+    path = os.path.join("static", "videos", path)
     range_header = request.META.get('HTTP_RANGE', '').strip()
     range_re = re.compile(r'bytes\s*=\s*(\d+)\s*-\s*(\d*)', re.I)
     range_match = range_re.match(range_header)
@@ -86,7 +88,3 @@ def stream_video(request, path):
         resp['Content-Length'] = str(size)
     resp['Accept-Ranges'] = 'bytes'
     return resp
-
-
-def html(request):
-    return render(request, 'show_video.html')
