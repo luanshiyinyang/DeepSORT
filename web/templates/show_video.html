@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    {#依赖jQueryVideo实现#}
+    <meta charset="UTF-8">
+    <title>显示视频</title>
+    <link href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="/static/css/video-js.min.css" rel="stylesheet">
+    <script src="/static/js/video.min.js" type="text/javascript"></script>
+</head>
+   
+<body>
+<div class="container" style="padding-bottom: 100px">
+    <h3 align="center" class="h3">目标跟踪结果</h3>
+    {% load staticfiles %}
+    <div class="m">
+        <video id="my-video" class="video-js" controls preload="none" width="800" height="600"  poster="http://video-js.zencoder.com/oceans-clip.png" data-setup="{}">
+            <source src='/static/videos/{{ filename }}' type="video/mp4">
+        </video>
+
+        <script type="text/javascript">
+
+            var myPlayer = videojs('my-video');
+            videojs("my-video").ready(function () {
+                var myPlayer = this;
+                myPlayer.play();
+            });
+        </script>
+    </div>
+</div>
+
+</body>
+
+
+</html>

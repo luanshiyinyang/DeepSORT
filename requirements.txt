@@ -11,3 +11,4 @@ easydict
 matplotlib
 django>=2.0
 tqdm
+cos-python-sdk-v5

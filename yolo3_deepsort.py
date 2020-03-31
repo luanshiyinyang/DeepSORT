@@ -42,7 +42,8 @@ class VideoTracker(object):
         self.im_height = int(self.vdo.get(cv2.CAP_PROP_FRAME_HEIGHT))
         if self.args.output_path:
             # 视频写入时尽量保证和原视频FPS一致
-            self.writer = cv2.VideoWriter(self.args.output_path, cv2.VideoWriter_fourcc(*'XVID'), self.video_fps, (self.im_width, self.im_height))
+            writer_encoder = cv2.VideoWriter_fourcc(*"XVID") if self.args.output_type == "avi" else cv2.VideoWriter_fourcc(*"X264")
+            self.writer = cv2.VideoWriter(self.args.output_path, writer_encoder, self.video_fps, (self.im_width, self.im_height))
         assert self.vdo.isOpened()
         return self
 
@@ -151,6 +152,7 @@ def parse_arguments():
     parser.add_argument("--show_height", type=int, default=600)  # 输出视频高度
     parser.add_argument("--output_path", type=str, default="./result/result.avi")  # 输出视频保存路径
     parser.add_argument("--use_cuda", action="store_true", default=True)  # 是否使用GPU
+    parser.add_argument("--output_type", type=str, default="avi")
     return parser.parse_args()
 
 
@@ -168,6 +170,7 @@ class Argument(object):
         self.display_width = 800  # 输出视频宽度
         self.display_height = 600  # 输出视频高度
         self.output_path = os.path.join(current_path, 'result/result.avi')  # 输出视频文件路径
+        self.output_type = "avi"
         self.use_cuda = True  # 是否使用GPU
 
 

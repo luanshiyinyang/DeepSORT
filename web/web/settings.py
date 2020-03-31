@@ -64,6 +64,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -123,9 +124,12 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # 设置图片等静态文件的路径
 STATICFILES_DIRS = (
-    ('images',os.path.join(STATIC_ROOT, 'images').replace('\\','/') ),
-    ('upload',os.path.join(STATIC_ROOT, 'upload').replace('\\','/') ),
+    ('images', os.path.join(STATIC_ROOT, 'images').replace('\\', '/')),
+    ('upload', os.path.join(STATIC_ROOT, 'upload').replace('\\', '/')),
+    ('videos', os.path.join(STATIC_ROOT, 'videos').replace('\\', '/')),
+    ('css', os.path.join(STATIC_ROOT, 'css').replace('\\', '/')),
+    ('js', os.path.join(STATIC_ROOT, 'js').replace('\\', '/')),
 )
 
-MEDIA_URL= '/media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
