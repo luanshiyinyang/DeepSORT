@@ -5,7 +5,6 @@ build/
 .idea/
 外部数据/
 外部数据测试结果/
-FasterRCNN/
 media/
 
 # Files
