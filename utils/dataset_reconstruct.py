@@ -27,7 +27,7 @@ def reconstruct_market1501(source_path, generate_path):
             continue
         target_folder = os.path.join(generate_path, str(pid))
         if not os.path.exists(target_folder):
-            os.mkdir(target_folder)
+            os.makedirs(target_folder)
         shutil.copy(os.path.join(source_path, img_name), os.path.join(target_folder, img_name))
 
 

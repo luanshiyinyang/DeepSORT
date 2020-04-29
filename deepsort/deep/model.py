@@ -73,7 +73,7 @@ class Net(nn.Module):
         self.layer4 = make_layers(256, 512, 2, True)
         # 256 8 4
         self.avgpool = nn.AvgPool2d((8, 4), 1)
-        # 256 1 1 
+        # 256 1 1
         self.reid = reid
         self.classifier = nn.Sequential(
             nn.Linear(512, 256),
@@ -91,7 +91,7 @@ class Net(nn.Module):
         x = self.layer4(x)
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
-        # B x 256
+        # 512
         if self.reid:
             x = x / x.norm(p=2, dim=1, keepdim=True)  # 张量单位化
             return x
@@ -102,6 +102,7 @@ class Net(nn.Module):
 
 if __name__ == '__main__':
     net = Net(reid=True)
+    print(net)
     x = torch.randn(4, 3, 128, 64)
     y = net(x)
     print(y.shape)

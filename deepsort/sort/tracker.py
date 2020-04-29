@@ -34,7 +34,6 @@ class Tracker:
         # 级联匹配
         matches, unmatched_tracks, unmatched_detections = self._match(detections)
 
-        # Update track set.
         for track_idx, detection_idx in matches:
             # 成功匹配的要用检测结果更新对于track的参数
             # 包括

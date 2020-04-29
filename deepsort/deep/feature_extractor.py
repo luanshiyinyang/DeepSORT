@@ -3,7 +3,7 @@ import torchvision.transforms as transforms
 import numpy as np
 import cv2
 
-from .model import Net
+from model import Net
 
 
 class Extractor(object):
@@ -44,12 +44,40 @@ class Extractor(object):
         return features.cpu().numpy()
 
 
-if __name__ == '__main__':
-    # 测试提取器
-    imgs = [cv2.cvtColor(cv2.imread("../../result/1.jpg"), cv2.COLOR_BGR2RGB),
-            cv2.cvtColor(cv2.imread("../../result/2.jpg"), cv2.COLOR_BGR2RGB)
-            ]
+def test():
+    def cosine(a, b, data_is_normalized=False):
+        if not data_is_normalized:
+            a = np.asarray(a) / np.linalg.norm(a, axis=1, keepdims=True)
+            b = np.asarray(b) / np.linalg.norm(b, axis=1, keepdims=True)
+        return np.dot(a, b.T)
+
+    img1 = cv2.cvtColor(cv2.resize(cv2.imread("1.jpg"), (64, 128)), cv2.COLOR_BGR2RGB)
+    img2 = cv2.cvtColor(cv2.resize(cv2.imread("2.jpg"), (64, 128)), cv2.COLOR_BGR2RGB)
+    img3 = cv2.cvtColor(cv2.resize(cv2.imread("3.jpg"), (64, 128)), cv2.COLOR_BGR2RGB)
+    imgs = [img1, img2, img3]
     extractor = Extractor("checkpoint/ckpt.t7")
     feature = extractor(imgs)
-    print(feature.shape)
+    a = feature[0]
+    b = feature[1]
+    c = feature[2]
+    import matplotlib.pyplot as plt
+    fig = plt.figure()
+    plt.subplot(1, 2, 1)
+    plt.imshow(img1)
+    plt.title(" ")
+    plt.subplot(1, 2, 2)
+    plt.imshow(img3)
+    fig.suptitle("cosine distance:" + str(cosine(a.reshape(1, -1), b.reshape(1, -1), True)[0][0]) + "\n")
+    plt.title(" ")
+    plt.savefig("false.png")
+    plt.show()
+
+
+if __name__ == '__main__':
+    # 测试提取器
+    test()
+
+
+
+
 

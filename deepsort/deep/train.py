@@ -29,6 +29,7 @@ train_dir = os.path.join(root, "bbox_train")
 test_dir = os.path.join(root, "bbox_test")
 # 图像预处理
 transform_train = torchvision.transforms.Compose([
+    torchvision.transforms.Resize((128, 64)),  # 如果采用Market数据集这一步可以删去，Mars必须要这一步
     torchvision.transforms.RandomCrop((128, 64), padding=4),
     torchvision.transforms.RandomHorizontalFlip(),
     torchvision.transforms.ToTensor(),
