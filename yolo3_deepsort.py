@@ -143,14 +143,14 @@ def parse_arguments():
     :return:
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument("--video_path", type=str, default='TownCentreXVID.avi')  # 进行跟踪的源视频
+    parser.add_argument("--video_path", type=str, default='./data/TownCentreXVID.avi')  # 进行跟踪的源视频
     parser.add_argument("--config_detection", type=str, default="./configs/yolov3.yml")  # yolo3检测配置文件
     parser.add_argument("--config_deepsort", type=str, default="./configs/deepsort.yml")  # deepsort跟踪配置文件
     parser.add_argument("--frame_interval", type=int, default=1)  # 输出视频帧间隔
     parser.add_argument("--show_window", dest="display", default=False)  # 是否视频控制台显示
     parser.add_argument("--show_width", type=int, default=800)  # 输出视频宽度
     parser.add_argument("--show_height", type=int, default=600)  # 输出视频高度
-    parser.add_argument("--output_path", type=str, default="./result/result.avi")  # 输出视频保存路径
+    parser.add_argument("--output_path", type=str, default="./results/result.avi")  # 输出视频保存路径
     parser.add_argument("--use_cuda", action="store_true", default=True)  # 是否使用GPU
     parser.add_argument("--output_type", type=str, default="avi")
     return parser.parse_args()

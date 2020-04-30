@@ -33,8 +33,8 @@ def upload(request):
                 for c in video.chunks():
                     f.write(c)
             # 视频保存本机之后调用模型
-            """
-            args = yolo3_deepsort.Argument(file_path)
+
+            """args = yolo3_deepsort.Argument(file_path)
             cfg = yolo3_deepsort.get_config()
             cfg.merge_from_file(args.config_detection)
             cfg.merge_from_file(args.config_deepsort)
@@ -62,7 +62,6 @@ def file_iterator(file_name, chunk_size=8192, offset=0, length=None):
 
 
 def stream_video(request):
-    """将视频文件以流媒体的方式响应"""
     path = request.GET.get('path')
     path = os.path.join("static", "videos", path)
     range_header = request.META.get('HTTP_RANGE', '').strip()

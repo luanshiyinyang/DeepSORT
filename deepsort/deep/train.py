@@ -116,6 +116,7 @@ def train(epoch):
 
 def test(epoch):
     global best_acc
+    print("Epoch{}".format(epoch + 1))
     print("Testing...")
     net.eval()
     test_loss = 0.
@@ -146,8 +147,6 @@ def test(epoch):
         print("Saving parameters to checkpoint/ckpt.t7")
         checkpoint = {
             'net_dict': net.state_dict(),
-            'acc': acc,
-            'epoch': epoch,
         }
         if not os.path.isdir('checkpoint'):
             os.mkdir('checkpoint')
