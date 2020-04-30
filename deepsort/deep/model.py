@@ -4,26 +4,26 @@ import torch.nn.functional as F
 
 
 class BasicBlock(nn.Module):
-    def __init__(self, c_in, c_out, is_downsample=False):
+    def __init__(self, in_channels, out_channels, is_downsample=False):
         super(BasicBlock, self).__init__()
         self.is_downsample = is_downsample
         if is_downsample:
-            self.conv1 = nn.Conv2d(c_in, c_out, 3, stride=2, padding=1, bias=False)
+            self.conv1 = nn.Conv2d(in_channels, out_channels, 3, stride=2, padding=1, bias=False)
         else:
-            self.conv1 = nn.Conv2d(c_in, c_out, 3, stride=1, padding=1, bias=False)
-        self.bn1 = nn.BatchNorm2d(c_out)
+            self.conv1 = nn.Conv2d(in_channels, out_channels, 3, stride=1, padding=1, bias=False)
+        self.bn1 = nn.BatchNorm2d(out_channels)
         self.relu = nn.ReLU(True)
-        self.conv2 = nn.Conv2d(c_out, c_out, 3, stride=1, padding=1, bias=False)
-        self.bn2 = nn.BatchNorm2d(c_out)
+        self.conv2 = nn.Conv2d(out_channels, out_channels, 3, stride=1, padding=1, bias=False)
+        self.bn2 = nn.BatchNorm2d(out_channels)
         if is_downsample:
             self.downsample = nn.Sequential(
-                nn.Conv2d(c_in, c_out, 1, stride=2, bias=False),
-                nn.BatchNorm2d(c_out)
+                nn.Conv2d(in_channels, out_channels, 1, stride=2, bias=False),
+                nn.BatchNorm2d(out_channels)
             )
-        elif c_in != c_out:
+        elif in_channels != out_channels:
             self.downsample = nn.Sequential(
-                nn.Conv2d(c_in, c_out, 1, stride=1, bias=False),
-                nn.BatchNorm2d(c_out)
+                nn.Conv2d(in_channels, out_channels, 1, stride=1, bias=False),
+                nn.BatchNorm2d(out_channels)
             )
             self.is_downsample = True
 
@@ -38,13 +38,13 @@ class BasicBlock(nn.Module):
         return F.relu(x.add(y), True)  # 残差连接
 
 
-def make_layers(c_in, c_out, repeat_times, is_downsample=False):
+def make_layers(in_channels, out_channels, repeat_times, is_downsample=False):
     blocks = []
     for i in range(repeat_times):
         if i == 0:
-            blocks += [BasicBlock(c_in, c_out, is_downsample=is_downsample), ]
+            blocks += [BasicBlock(in_channels, out_channels, is_downsample=is_downsample), ]
         else:
-            blocks += [BasicBlock(c_out, c_out), ]
+            blocks += [BasicBlock(out_channels, out_channels), ]
     return nn.Sequential(*blocks)
 
 
@@ -52,7 +52,7 @@ class Net(nn.Module):
     def __init__(self, num_classes=1261, reid=False):
         """
 
-        :param num_classes: 分类器层输出的类别数目
+        :param num_classes: 分类器层输出的类别数目，Mars数据集训练集加测试集共1261类
         :param reid: 是否为reid模式，若为True，直接返回特征向量而不做分类
         """
         super(Net, self).__init__()
@@ -91,7 +91,7 @@ class Net(nn.Module):
         x = self.layer4(x)
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
-        # 512
+        # 256
         if self.reid:
             x = x / x.norm(p=2, dim=1, keepdim=True)  # 张量单位化
             return x
