@@ -9,12 +9,12 @@ import torchvision
 from model import Net
 
 # 命令行参数配置
-parser = argparse.ArgumentParser(description="Train on MARS")
+parser = argparse.ArgumentParser(description="Train on Mars")
 parser.add_argument("--data-dir", default='/SISDC_GPFS/Home_SE/jiangm-jnu/xiaf-jnu/zhouchen/dataset/MARS-generated/', type=str)  # 修改为自己的数据集目录
 parser.add_argument("--gpu-id", default=0, type=int)
-parser.add_argument("--lr", default=0.1, type=float)
-parser.add_argument("--interval", '-i', default=20, type=int)
-parser.add_argument('--resume', '-r', action='store_true', default=False)
+parser.add_argument("--lr", default=0.1, type=float)  # 初始学习率
+parser.add_argument("--interval", '-i', default=20, type=int)  # 日志输出间隔
+parser.add_argument('--resume', '-r', action='store_true', default=False)  # 使用预训练模型
 args = parser.parse_args()
 
 # 确定训练设备
