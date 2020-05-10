@@ -3,12 +3,12 @@ import torchvision.transforms as transforms
 import numpy as np
 import cv2
 
-from .model import Net
+from model import Net
 
 
 class Extractor(object):
     def __init__(self, model_path, use_cuda=True):
-        self.net = Net(reid=True, num_classes=751)
+        self.net = Net(reid=True, num_classes=1261)
         self.device = "cuda" if torch.cuda.is_available() and use_cuda else "cpu"
         state_dict = torch.load(model_path, map_location=lambda storage, loc: storage)['net_dict']
         self.net.load_state_dict(state_dict)
@@ -66,8 +66,20 @@ def test():
     plt.imshow(img1)
     plt.title(" ")
     plt.subplot(1, 2, 2)
+    plt.imshow(img2)
+    fig.suptitle("Cosine similarity:" + str(cosine(a.reshape(1, -1), b.reshape(1, -1), True)[0][0]) + "\n")
+    plt.title(" ")
+    plt.savefig("true.png")
+    plt.show()
+
+    import matplotlib.pyplot as plt
+    fig = plt.figure()
+    plt.subplot(1, 2, 1)
+    plt.imshow(img1)
+    plt.title(" ")
+    plt.subplot(1, 2, 2)
     plt.imshow(img3)
-    fig.suptitle("cosine distance:" + str(cosine(a.reshape(1, -1), b.reshape(1, -1), True)[0][0]) + "\n")
+    fig.suptitle("Cosine similarity:" + str(cosine(a.reshape(1, -1), c.reshape(1, -1), True)[0][0]) + "\n")
     plt.title(" ")
     plt.savefig("false.png")
     plt.show()
