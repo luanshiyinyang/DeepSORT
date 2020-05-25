@@ -15,11 +15,11 @@
 <body>
 <div class="container" style="padding-bottom: 100px">
     <h3 align="center" class="h3">目标跟踪结果</h3>
-    {% load staticfiles %}
+    {% load static %}
     <div class="m" style="margin: 0 auto; width: 800px">
         <video id="my-video" class="video-js" controls preload="none" width="800" height="600"
                poster="/static/images/bg.png" data-setup="{}">
-            <source src='{% url 'video' %}?path=result.mp4' type="video/mp4">
+            <source src='{% url 'video' %}?path=rst.mp4' type="video/mp4">
         </video>
     </div>
 </div>

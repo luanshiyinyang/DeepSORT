@@ -14,6 +14,7 @@ from .settings import MEDIA_ROOT, STATIC_ROOT
 import sys
 sys.path.append("../")
 import yolo3_deepsort
+import utils.format_factory as ff
 
 
 def upload(request):
@@ -34,14 +35,17 @@ def upload(request):
                     f.write(c)
             # 视频保存本机之后调用模型
 
-            """args = yolo3_deepsort.Argument(file_path)
+            args = yolo3_deepsort.Argument(file_path)
+            args.output_path = os.path.join(STATIC_ROOT, 'videos', 'rst.avi')
             cfg = yolo3_deepsort.get_config()
             cfg.merge_from_file(args.config_detection)
             cfg.merge_from_file(args.config_deepsort)
             with yolo3_deepsort.VideoTracker(cfg, args, file_path) as vdo_trk:
-                images = vdo_trk.run_with_limit(30, save_path=STATIC_ROOT + '/images/')
-            """
-            return render(request, 'show_video.html', {'filename': 'result.mp4'})
+                vdo_trk.run_with_limit(300)
+            os.remove(os.path.join(STATIC_ROOT, 'videos', 'rst.mp4'))
+            ff.avi2mp4(args.output_path, os.path.join(STATIC_ROOT, 'videos', 'rst.mp4'))
+
+            return render(request, 'show_video.html', {'filename': 'rst.mp4'})
         else:
             return render(request, 'upload.html')
     return render(request, 'upload.html')

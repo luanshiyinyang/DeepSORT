@@ -1,6 +1,6 @@
 DEEPSORT:
   # 预训练reid模型参数文件
-  REID_CKPT: "./deepsort/deep/checkpoint/ckpt1.t7"
+  REID_CKPT: "../deepsort/deep/checkpoint/ckpt.t7"
   MAX_DIST: 0.2
   MIN_CONFIDENCE: 0.3
   NMS_MAX_OVERLAP: 0.5

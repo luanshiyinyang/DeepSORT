@@ -10,7 +10,7 @@ def avi2mp4(source_path: str, target_path:str):
     print("start transformation")
     ff = FFmpeg(
         inputs={source_path: '-f avi'},
-        outputs={target_path: '-f mp4'}
+        outputs={target_path: '-f mp4 -y'}
     )
     print(ff.cmd)
     ff.run()

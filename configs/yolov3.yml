@@ -1,7 +1,7 @@
 YOLOV3:
-  CFG: "./detector/YOLO3/cfg/yolo_v3.cfg"
-  WEIGHT: "./detector/YOLO3/weight/yolov3.weights"
-  CLASS_NAMES: "./detector/YOLO3/cfg/coco.names"
+  CFG: "../detector/YOLO3/cfg/yolo_v3.cfg"
+  WEIGHT: "../detector/YOLO3/weight/yolov3.weights"
+  CLASS_NAMES: "../detector/YOLO3/cfg/coco.names"
 
   SCORE_THRESH: 0.5
   NMS_THRESH: 0.4

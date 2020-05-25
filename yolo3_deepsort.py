@@ -28,7 +28,7 @@ class VideoTracker(object):
         if self.args.display:
             # 创建可视化窗口
             cv2.namedWindow("test", cv2.WINDOW_NORMAL)
-            cv2.resizeWindow("test", args.display_width, args.display_height)
+            cv2.resizeWindow("test", args.show_width, args.show_height)
 
         self.vdo = cv2.VideoCapture()
         self.detector = build_detector(self.cfg, use_cuda=is_use_cuda)
@@ -96,11 +96,8 @@ class VideoTracker(object):
 
         print(sum(fps_list) / idx_frame)
 
-    def run_with_limit(self, frame_limit=200, save_path=None):
-        if save_path:
-            self.args.output_path = save_path
+    def run_with_limit(self, frame_limit=20):
         idx_frame = 0
-        result_path = []  # 存放预览的跟踪结果图片
         while self.vdo.grab() and idx_frame < frame_limit * self.args.frame_interval:
             idx_frame += 1
             start = time.time()
@@ -131,10 +128,10 @@ class VideoTracker(object):
             if idx_frame % self.args.frame_interval == 0:
                 if self.args.output_path:
                     self.writer.write(ori_im)
-                    file_path = os.path.join(save_path, '{}.png'.format(idx_frame))
-                    result_path.append(os.path.split(file_path)[-1])  # 只返回文件名，不包含完整路径，这是为了配合Django的静态文件设置
-                    cv2.imwrite(file_path, ori_im)
-        return result_path
+                    # file_path = os.path.join(save_path, '{}.png'.format(idx_frame))
+                    # result_path.append(os.path.split(file_path)[-1])  # 只返回文件名，不包含完整路径，这是为了配合Django的静态文件设置
+                    # cv2.imwrite(file_path, ori_im)
+        return None
 
 
 def parse_arguments():
@@ -163,15 +160,18 @@ class Argument(object):
         :param video_path:
         """
         self.video_path = video_path  # 输入视频路径
-        self.config_detector = os.path.join(current_path, 'configs/yolov3.yml')  # 检测器配置文件
+        self.config_detection = os.path.join(current_path, 'configs/yolov3.yml')  # 检测器配置文件
         self.config_deepsort = os.path.join(current_path, 'configs/deepsort.yml')  # deepsort算法配置文件
-        self.display_window = False  # 默认API调用模式不显示opencv窗口
+        self.display = False  # 默认API调用模式不显示opencv窗口
         self.frame_interval = 1  # 输出帧间隔默认为1，此种情况下若输出视频与输入视频FPS为相等，则输出视频与输入视频等时长
-        self.display_width = 800  # 输出视频宽度
-        self.display_height = 600  # 输出视频高度
+        self.show_width = 800  # 输出视频宽度
+        self.show_height = 600  # 输出视频高度
         self.output_path = os.path.join(current_path, 'result/result.avi')  # 输出视频文件路径
         self.output_type = "avi"
         self.use_cuda = True  # 是否使用GPU
+
+def get_config():
+    return parse_config()
 
 
 if __name__ == "__main__":
