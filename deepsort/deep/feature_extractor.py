@@ -8,7 +8,7 @@ from .model import Net
 
 class Extractor(object):
     def __init__(self, model_path, use_cuda=True):
-        self.net = Net(reid=True, num_classes=1261)
+        self.net = Net(reid=True, num_classes=751)
         self.device = "cuda" if torch.cuda.is_available() and use_cuda else "cpu"
         state_dict = torch.load(model_path, map_location=lambda storage, loc: storage)['net_dict']
         self.net.load_state_dict(state_dict)
@@ -55,7 +55,7 @@ def test():
     img2 = cv2.cvtColor(cv2.resize(cv2.imread("2.jpg"), (64, 128)), cv2.COLOR_BGR2RGB)
     img3 = cv2.cvtColor(cv2.resize(cv2.imread("3.jpg"), (64, 128)), cv2.COLOR_BGR2RGB)
     imgs = [img1, img2, img3]
-    extractor = Extractor("checkpoint/ckpt.t7")
+    extractor = Extractor("checkpoint/ckpt1.t7")
     feature = extractor(imgs)
     a = feature[0]
     b = feature[1]
