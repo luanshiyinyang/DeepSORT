@@ -7,6 +7,7 @@ build/
 外部数据测试结果/
 media/
 web/static/images/
+recording/
 
 # Files
 *.weights
@@ -16,5 +17,4 @@ web/static/images/
 *.so
 *.zip
 *.jpg
-demo.gif
-recording/
+*.gif
