@@ -79,9 +79,6 @@ def multi_bbox_ious(boxes1, boxes2, x1y1x2y2=True):
     return carea / uarea
 
 
-
-
-
 def post_process(boxes, num_classes, conf_thresh=0.01, nms_thresh=0.45, obj_thresh=0.3):
     batch_size = boxes.size(0)
 
@@ -478,9 +475,6 @@ def image2torch(img):
         print("unknown image type")
         exit(-1)
     return img
-
-
-import types
 
 
 def do_detect(model, img, conf_thresh, nms_thresh, use_cuda=True):

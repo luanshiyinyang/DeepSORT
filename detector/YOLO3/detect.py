@@ -11,8 +11,6 @@ namesfile = None
 
 def detect(cfgfile, weightfile, imgfolder):
     m = Darknet(cfgfile)
-
-    # m.print_network()
     m.load_weights(weightfile)
     print('Loaded weights from %s.' % (weightfile))
 
