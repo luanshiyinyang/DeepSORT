@@ -41,6 +41,8 @@ class VideoTracker(object):
         self.deepsort = build_tracker(self.cfg, use_cuda=is_use_cuda)
 
     def __enter__(self):
+        self.video_fps = self.camera.get(cv2.CAP_PROP_FPS)
+        print("camera capture fps:", self.video_fps)
         if self.args.output_path:
             # 视频写入时尽量保证和原视频FPS一致
             writer_encoder = cv2.VideoWriter_fourcc(*"XVID")
@@ -64,7 +66,6 @@ class VideoTracker(object):
             start = time.time()
             _, ori_im = self.camera.read()  # 解码并返回一帧图像
             im = cv2.cvtColor(ori_im, cv2.COLOR_BGR2RGB)
-
             # 目标检测
             bbox_xywh, cls_confidence, cls_ids = self.detector(im)
             if bbox_xywh is not None:
