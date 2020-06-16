@@ -191,7 +191,7 @@ def lr_decay():
 
 
 def main():
-    # 训练50轮即达到饱和
+    # 训练50轮
     for epoch in range(50):
         train_loss, train_err = train(epoch)
         test_loss, test_err = test(epoch)

@@ -105,21 +105,7 @@ def matching_cascade(distance_metric, max_distance, cascade_depth, tracks, detec
 def gate_cost_matrix(kf, cost_matrix, tracks, detections, track_indices, detection_indices,
                      gated_cost=INFTY_COST, only_position=False):
     """
-    基于卡尔曼滤波获得的状态分布，对代价矩阵中不可行项进行无效处理
-    Parameters
-    ----------
-    kf
-    cost_matrix
-    tracks
-    detections
-    track_indices
-    detection_indices
-    gated_cost
-    only_position
-
-    Returns
-    -------
-
+    使用马氏距离进一步筛选代价矩阵
     """
     gating_dim = 2 if only_position else 4
     gating_threshold = kalman_filter.chi2inv95[gating_dim]

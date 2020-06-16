@@ -76,7 +76,9 @@ class Tracker:
         def gated_metric(tracks, dets, track_indices, detection_indices):
             features = np.array([dets[i].feature for i in detection_indices])
             targets = np.array([tracks[i].track_id for i in track_indices])
+            # 通过最近邻计算余弦距离代价矩阵
             cost_matrix = self.metric.distance(features, targets)
+            # 计算马氏距离，得到新的代价矩阵
             cost_matrix = linear_assignment.gate_cost_matrix(
                 self.kf, cost_matrix, tracks, dets, track_indices,
                 detection_indices)

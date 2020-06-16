@@ -2,7 +2,6 @@ class TrackState:
     """
     轨迹状态
     """
-
     Tentative = 1
     Confirmed = 2
     Deleted = 3
@@ -10,7 +9,6 @@ class TrackState:
 
 class Track:
     """
-    单目标轨迹
     包含一个轨迹的所有信息
     """
 
@@ -19,8 +17,7 @@ class Track:
         self.mean = mean
         self.covariance = covariance
         self.track_id = track_id
-        self.hits = 1
-        self.age = 1
+        self.hits = 1  # 命中次数
         self.time_since_update = 0
 
         self.state = TrackState.Tentative  # 创建时的状态为Tentative
@@ -51,29 +48,13 @@ class Track:
     def predict(self, kf):
         """
         使用卡尔曼滤波进行状态预测
-        Parameters
-        ----------
-        kf
-
-        Returns
-        -------
-
         """
         self.mean, self.covariance = kf.predict(self.mean, self.covariance)
-        self.age += 1
         self.time_since_update += 1  # 每次预测自增1
 
     def update(self, kf, detection):
         """
         进行相关矩阵和数据的更新
-        Parameters
-        ----------
-        kf
-        detection
-
-        Returns
-        -------
-
         """
         self.mean, self.covariance = kf.update(
             self.mean, self.covariance, detection.to_xyah())
@@ -92,15 +73,18 @@ class Track:
 
     def is_tentative(self):
         """
-        该轨迹是否为tentative
-        Returns
-        -------
-
+        该轨迹是否为tentative（临时存在）
         """
         return self.state == TrackState.Tentative
 
     def is_confirmed(self):
+        """
+        该轨迹是否确认
+        """
         return self.state == TrackState.Confirmed
 
     def is_deleted(self):
+        """
+        该轨迹是否删除
+        """
         return self.state == TrackState.Deleted
