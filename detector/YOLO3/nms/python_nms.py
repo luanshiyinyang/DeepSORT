@@ -3,15 +3,6 @@ import numpy as np
 
 
 def python_nms(boxes, scores, nms_thresh):
-    """ Performs non-maximum suppression using numpy
-        Args:
-            boxes(Tensor): `xyxy` mode boxes, use absolute coordinates(not support relative coordinates),
-                shape is (n, 4)
-            scores(Tensor): scores, shape is (n, )
-            nms_thresh(float): thresh
-        Returns:
-            indices kept.
-    """
     if boxes.numel() == 0:
         return torch.empty((0,), dtype=torch.long)
     # Use numpy to run nms. Running nms in PyTorch code on CPU is really slow.

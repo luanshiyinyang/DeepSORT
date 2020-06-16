@@ -62,34 +62,3 @@ class YOLOv3(object):
         with open(namesfile, 'r', encoding='utf8') as fp:
             class_names = [line.strip() for line in fp.readlines()]
         return class_names
-
-
-def demo():
-    import os
-    from vizer.draw import draw_boxes
-
-    yolo = YOLOv3("cfg/yolo_v3.cfg","weight/yolov3.weights","cfg/coco.names")
-    print("yolo.size =",yolo.size)
-    root = "./result"
-    resdir = os.path.join(root, "results")
-    os.makedirs(resdir, exist_ok=True)
-    files = [os.path.join(root,file) for file in os.listdir(root) if file.endswith('.jpg')]
-    files.sort()
-    for filename in files:
-        img = cv2.imread(filename)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        bbox, cls_conf, cls_ids = yolo(img)
-
-        if bbox is not None:
-            img = draw_boxes(img, bbox, cls_ids, cls_conf, class_name_map=yolo.class_names)
-        # save results
-        cv2.imwrite(os.path.join(resdir, os.path.basename(filename)) ,img[:,:,(2,1,0)])
-        # imshow
-        # cv2.namedWindow("yolo", cv2.WINDOW_NORMAL)
-        # cv2.resizeWindow("yolo", 600,600)
-        # cv2.imshow("yolo",res[:,:,(2,1,0)])
-        # cv2.waitKey(0)
-
-
-if __name__ == "__main__":
-    demo()

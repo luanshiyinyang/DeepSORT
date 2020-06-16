@@ -55,8 +55,6 @@ class DeepSort(object):
     def _xywh_to_tlwh(bbox_xywh):
         """
         转化(xc, yc, w, h)为(xtl,ytl,w, h)
-        :param bbox_xywh:
-        :return:
         """
         if isinstance(bbox_xywh, np.ndarray):
             bbox_tlwh = bbox_xywh.copy()
@@ -87,9 +85,6 @@ class DeepSort(object):
     def _get_features(self, bbox_xywh, ori_img):
         """
         获得图像的检测块的深度特征
-        :param bbox_xywh:
-        :param ori_img:
-        :return:
         """
         im_crops = []
         for box in bbox_xywh:
