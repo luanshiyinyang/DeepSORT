@@ -106,6 +106,10 @@ def gate_cost_matrix(kf, cost_matrix, tracks, detections, track_indices, detecti
                      gated_cost=INFTY_COST, only_position=False):
     """
     使用马氏距离进一步筛选代价矩阵
+    门控矩阵的作用就是通过计算卡尔曼滤波的状态分布和测量值之间的距离对代价矩阵进行限制。
+    代价矩阵中的距离是Track和Detection之间的表观相似度，假如一个轨迹要去匹配两个表观特征非常相似的Detection，这样就很容易出错，
+    但是这个时候分别让两个Detection计算与这个轨迹的马氏距离，
+    并使用一个阈值gating_threshold进行限制，所以就可以将马氏距离较远的那个Detection区分开，可以降低错误的匹配。
     """
     gating_dim = 2 if only_position else 4
     gating_threshold = kalman_filter.chi2inv95[gating_dim]

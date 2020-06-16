@@ -146,19 +146,8 @@ class KalmanFilter(object):
 
     def gating_distance(self, mean, covariance, measurements,
                         only_position=False):
-        """
-        计算状态分布和测量之间的选通距离
-        Parameters
-        ----------
-        mean
-        covariance
-        measurements
-        only_position则卡方分布4个自由度，否则为2个自由度
 
-        Returns
-        -------
 
-        """
         mean, covariance = self.project(mean, covariance)
         if only_position:
             mean, covariance = mean[:2], covariance[:2, :2]
